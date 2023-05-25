@@ -9,12 +9,15 @@ void retornarPorParam(int* a, int *b){
 
 int main(void){
     int num = 1202;
-	int a, b;
     int* pont = &num;
     int** pontPont = &pont;
+	int a, b;
 	    
-    printf("%d\n", pont);
-    printf("%d\n", pontPont);
+    printf("pont = %d\n", pont);
+    printf("*pont = %d\n", *pont);
+    printf("pontPont = %d\n", pontPont);
+    printf("*pontPont = %d\n", *pontPont);
+    printf("**pontPont = %d\n", **pontPont);
 	
 	retornarPorParam(&a, &b);
 	printf("%d %d", a, b);
