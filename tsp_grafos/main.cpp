@@ -23,7 +23,8 @@ int main(){
     grafo.adicionarAresta(1.0, "Joao", "Creuza");
     grafo.adicionarAresta(3.0, "Craudio", "Joao");
     grafo.adicionarAresta(2.0, "Craudio", "Lorenzo");
-
+    grafo.buscaEmLargura(0);
+/*
     vector<string> nomes = {"André", "Andrey", "Andressa", "Anderson"};
 
     cout << "digite um nome\n";
@@ -34,8 +35,7 @@ int main(){
         cout << "Nao Contem" << endl;
     }
     //cout << "Resultado do quadrado de " << n << " é igual a: " << n*n << endl;
-    
-    grafo.buscaEmLargura();
+    */
 
 
     return 0;

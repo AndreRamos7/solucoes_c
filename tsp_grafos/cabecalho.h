@@ -9,7 +9,7 @@ class Aresta; // necessário redeclarar antes pois Vertice chama Aresta e vice-v
 
 class Vertice{
     private:
-        string dado;
+        string dado;        
         vector<Aresta> arestasEntrada;
         vector<Aresta> arestasSaida;
     public:
@@ -18,18 +18,20 @@ class Vertice{
         string getDado();
         vector<Aresta> getArestasEntrada();
         vector<Aresta> getArestasSaida();
-        void addArestasEntrada(Aresta);
-        void addArestasSaida(Aresta);
+        void adicionarArestasEntrada(Aresta);
+        void adicionarArestasSaida(Aresta);
         bool operator==(const Vertice &other) const {
             return dado == other.dado /*&& row == other.row*/;
         };
-        ~Vertice() { };        
+        ~Vertice() { };    
+        //friend class Aresta;    
 };
 class Aresta{
     private:
         int peso;
         Vertice inicio, fim;
     public:
+        Aresta();
         Aresta(double, Vertice, Vertice);
         double getPeso();
         Vertice getInicio();
@@ -38,6 +40,7 @@ class Aresta{
         void setInicio(Vertice);
         void setFim(Vertice);
         ~Aresta() {} ;
+        //friend class Vertice;   
 };
 
 
@@ -50,7 +53,7 @@ class Grafo{
         void adicionarVertice(string);
         void adicionarAresta(double, string, string);
         Vertice getVertice(string);
-        void buscaEmLargura();        
+        void buscaEmLargura(int);        
         ~Grafo(){};
 };
 

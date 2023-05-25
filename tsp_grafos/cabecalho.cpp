@@ -4,62 +4,64 @@
 #include<vector>
 #include<string>
 using namespace std;
-/* ====================  DEFINI��O DA CLASSE ARESTA ====================== */
-Aresta::Aresta(double p, Vertice ini, Vertice fim){
-    this->peso = p;
-    this->inicio = ini;
-    this->fim = fim;
+/* ====================  DEFINIÇÃO DA CLASSE ARESTA ====================== */
+Aresta::Aresta(){}
+Aresta::Aresta(double p, Vertice ini, Vertice fm){
+    peso = p;
+    inicio = ini;
+    fim = fm;
 }
 
 double Aresta::getPeso(){
-    return this->peso;
+    return peso;
 }
 
 void Aresta::setPeso(double p){
-    this->peso = p;
+    peso = p;
 }
 
 void Aresta::setInicio(Vertice ini){
-    this->inicio = ini;
+    inicio = ini;
 }
 
 void Aresta::setFim(Vertice fim){
-    this->fim = fim;
+    fim = fim;
 }
 
 Vertice Aresta::getInicio(){    
-    return this->inicio;
+    return inicio;
 }
 
 Vertice Aresta::getFim(){
-    return this->fim;
+    return fim;
 }
 
-/* ====================  DEFINI��O DA CLASSE VERTICE ====================== */
+/* ====================  DEFINIçãO DA CLASSE VERTICE ====================== */
 Vertice::Vertice(){}
 
 Vertice::Vertice(string dd){
-    this->dado = dd;
+    dado = dd;
 }
 
 string Vertice::getDado(){
-    return this->dado;
+    return dado;
 }
 vector<Aresta> Vertice::getArestasEntrada(){
     return arestasEntrada;
-
 }
 vector<Aresta> Vertice::getArestasSaida(){
     return arestasSaida;
 }
-void Vertice::addArestasEntrada(Aresta are){
+void Vertice::adicionarArestasEntrada(Aresta are){
     arestasEntrada.push_back(are);
+    //cout << "arestasEntrada.size() = " << getArestasEntrada().size() << endl;
 }
-void Vertice::addArestasSaida(Aresta ars){
-    arestasEntrada.push_back(ars);
+void Vertice::adicionarArestasSaida(Aresta ars){
+    arestasSaida.push_back(ars);
+    //cout << "arestasSaida.size() = " << getArestasSaida().size() << endl;
 }
 
-/* ====================  DEFINI��O DA CLASSE GRAFO ====================== */
+/* ====================  DEFINIÇÃO DA CLASSE GRAFO ====================== */
 
 Grafo::Grafo(){}
 
@@ -71,38 +73,47 @@ void Grafo::adicionarVertice(string dado){
 void Grafo::adicionarAresta(double peso, string dadoInicio, string dadoFim){
     Vertice inicio = getVertice(dadoInicio);
     Vertice fim = getVertice(dadoFim);
+    /*cout << "inicio: " << inicio.getDado() << endl;
+    cout << "fim: " << fim.getDado() << endl;*/
     Aresta aresta(peso, inicio, fim);
-    inicio.addArestasSaida(aresta);
-    fim.addArestasEntrada(aresta);
+    inicio.adicionarArestasSaida(aresta);
+    fim.adicionarArestasEntrada(aresta);
     arestas.push_back(aresta);
 }
 
 Vertice Grafo::getVertice(string dado){
     Vertice vertice;
-    for(int i=0; i < this->vertices.size(); i++){
-        if (this->vertices[i].getDado() == dado){
-            vertice = this->vertices[i];
+    for(int i = 0; i < vertices.size(); i++){
+        if (vertices.at(i).getDado() == dado){
+            //cout << "encontrou " << dado << endl;
+            vertice = vertices.at(i);
             break;
         }
     }
     return vertice;
 }
 
-void Grafo::buscaEmLargura(){
+void Grafo::buscaEmLargura(int origem){
+    
     vector<Vertice> marcados;
     vector<Vertice> fila;
-    Vertice atual = this->vertices[0];
+    Vertice atual = vertices.at(origem);
     marcados.push_back(atual);
-    cout << atual.getDado() << endl;
+    cout << "Nome = " << atual.getDado() << endl;
     fila.push_back(atual);
+    cout << "Comprimento da fila = " << fila.size() << endl;
 
     while(fila.size() > 0){
-        Vertice visitado = fila[0];
-        for(int i=0; i < visitado.getArestasSaida().size(); i++){
-            Vertice proximo = visitado.getArestasSaida()[i].getFim();                
+        
+        Vertice visitado = fila.at(origem);
+        //cout << "\nvisitado = " << visitado.getDado();
+        //cout << "\nvisitado.getArestasSaida().at(0).getPeso() = " << visitado.getArestasSaida().at(0).getPeso() << endl;
+        for(int i = 0; i < visitado.getArestasSaida().size(); i++){
+            cout << "Entrou no for" << endl;
+            Vertice proximo = visitado.getArestasSaida().at(i).getFim();                
             auto results = find(marcados.begin(), marcados.end(), proximo);
-            if (/*!marcados.contains(proximo)*/!(results != marcados.end())){ //se o vértice ainda não foi marcado
-                cout << "Entrou" << endl;
+            if (/*!marcados.contains(proximo) !(results != marcados.end())*/true){ //se o vértice ainda não foi marcado
+                
                 marcados.push_back(proximo);
                 cout << proximo.getDado() << endl;
                 fila.push_back(proximo);
@@ -114,7 +125,7 @@ void Grafo::buscaEmLargura(){
 
 
 
-/* ====================  DEFINI��O DA CLASSE CAIXEIRO ====================== */
+/* ====================  DEFINIÇÃO DA CLASSE CAIXEIRO ====================== */
 
 Caixeiro::Caixeiro(){
 
