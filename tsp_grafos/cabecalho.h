@@ -24,7 +24,7 @@ class Vertice{
             return dado == other.dado /*&& row == other.row*/;
         };
         ~Vertice() { };    
-        //friend class Aresta;    
+        friend class Aresta;    
 };
 class Aresta{
     private:
