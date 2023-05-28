@@ -60,13 +60,16 @@ void Vertice::adicionarArestasSaida(Aresta* ars){
 Grafo::Grafo(){}
 
 void Grafo::adicionarVertice(string dado){
+    /*cout << dado << endl;*/
     Vertice novoVertice(dado);
     vertices.push_back(&novoVertice);
 }
 
 Vertice* Grafo::getVertice(string dado){
     Vertice* vertice;
+    cout << "size vertice = " << vertices.size() << endl;
     for(int i = 0; i < vertices.size(); i++){
+        cout << vertices.at(i)->getDado() << "\n";
         if (vertices.at(i)->getDado() == dado){
             //cout << "encontrou " << dado << endl;
             vertice = vertices.at(i);
@@ -79,8 +82,8 @@ Vertice* Grafo::getVertice(string dado){
 void Grafo::adicionarAresta(double peso, string dadoInicio, string dadoFim){
     Vertice* inicio = getVertice(dadoInicio);
     Vertice* fim = getVertice(dadoFim);
-    /*cout << "inicio: " << inicio.getDado() << endl;
-    cout << "fim: " << fim.getDado() << endl;*/
+    cout << "inicio: " << inicio->getDado() << endl;
+    cout << "fim: " << fim->getDado() << endl;
     Aresta aresta(peso, inicio, fim);
     inicio->adicionarArestasSaida(&aresta);
     fim->adicionarArestasEntrada(&aresta);
@@ -94,7 +97,7 @@ void Grafo::buscaEmLargura(int origem){
     vector<Vertice*> fila;
     Vertice* atual = vertices.at(origem);
     marcados.push_back(atual);
-    cout << "Nome = " << atual->getDado() << endl;
+    cout << "Nome = " << (*atual).getDado() << endl;
     fila.push_back(atual);
     cout << "Comprimento da fila = " << fila.size() << endl;
 

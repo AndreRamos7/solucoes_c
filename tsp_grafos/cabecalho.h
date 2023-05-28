@@ -3,6 +3,7 @@
 
 #include<string>
 #include<vector>
+#include <cstdlib>
 
 using namespace std;
 class Aresta; // necessário redeclarar antes pois Vertice chama Aresta e vice-versa
@@ -29,8 +30,8 @@ class Vertice{
 class Aresta{
     private:
         int peso;
-        Vertice* inicio;
-        Vertice* fim;
+        Vertice* inicio = (Vertice*) malloc(sizeof(Vertice*));
+        Vertice* fim = (Vertice*) malloc(sizeof(Vertice*));
     public:
         Aresta();
         Aresta(double, Vertice*, Vertice*);
