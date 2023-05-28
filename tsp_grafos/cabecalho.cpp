@@ -6,11 +6,7 @@
 using namespace std;
 /* ====================  DEFINIÇÃO DA CLASSE ARESTA ====================== */
 Aresta::Aresta(){}
-Aresta::Aresta(double p, Vertice ini, Vertice fm){
-    peso = p;
-    inicio = ini;
-    fim = fm;
-}
+Aresta::Aresta(double p, Vertice ini, Vertice fm):peso(p),inicio(ini),fim(fm){}
 
 double Aresta::getPeso(){
     return peso;
@@ -24,8 +20,8 @@ void Aresta::setInicio(Vertice ini){
     inicio = ini;
 }
 
-void Aresta::setFim(Vertice fim){
-    fim = fim;
+void Aresta::setFim(Vertice fm){
+    fim = fm;
 }
 
 Vertice Aresta::getInicio(){    
@@ -39,9 +35,7 @@ Vertice Aresta::getFim(){
 /* ====================  DEFINIçãO DA CLASSE VERTICE ====================== */
 Vertice::Vertice(){}
 
-Vertice::Vertice(string dd){
-    dado = dd;
-}
+Vertice::Vertice(string dd):dado(dd){}
 
 string Vertice::getDado(){
     return dado;
@@ -104,6 +98,8 @@ void Grafo::buscaEmLargura(int origem){
     cout << "Comprimento da fila = " << fila.size() << endl;
 
     while(fila.size() > 0){
+        vector<Aresta> a = atual.getArestasSaida();
+        cout << "\n atual.getArestasSaida().size() = " << a.size() << endl;
         
         Vertice visitado = fila.at(origem);
         //cout << "\nvisitado = " << visitado.getDado();
