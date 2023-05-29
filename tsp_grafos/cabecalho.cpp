@@ -23,7 +23,6 @@ void Aresta::setInicio(Vertice ini){
 void Aresta::setFim(Vertice fm){
     fim = fm;
 }
-
 Vertice Aresta::getInicio(){    
     return inicio;
 }
@@ -38,20 +37,20 @@ Vertice::Vertice(){}
 Vertice::Vertice(string dd):dado(dd){}
 
 string Vertice::getDado(){
-    return dado;
+    return this->dado;
 }
 vector<Aresta> Vertice::getArestasEntrada(){
-    return arestasEntrada;
+    return this->arestasEntrada;
 }
 vector<Aresta> Vertice::getArestasSaida(){
-    return arestasSaida;
+    return this->arestasSaida;
 }
 void Vertice::adicionarArestasEntrada(Aresta are){
-    arestasEntrada.push_back(are);
+    this->arestasEntrada.push_back(are);
     //cout << "arestasEntrada.size() = " << getArestasEntrada().size() << endl;
 }
 void Vertice::adicionarArestasSaida(Aresta ars){
-    arestasSaida.push_back(ars);
+    this->arestasSaida.push_back(ars);
     //cout << "arestasSaida.size() = " << getArestasSaida().size() << endl;
 }
 
@@ -102,8 +101,8 @@ void Grafo::buscaEmLargura(int origem){
         cout << "\n atual.getArestasSaida().size() = " << a.size() << endl;
         
         Vertice visitado = fila.at(origem);
-        //cout << "\nvisitado = " << visitado.getDado();
-        //cout << "\nvisitado.getArestasSaida().at(0).getPeso() = " << visitado.getArestasSaida().at(0).getPeso() << endl;
+        cout << "\nvisitado = " << visitado.getDado();
+        cout << "\nvisitado.getArestasSaida().at(0).getPeso() = " << visitado.getArestasSaida().at(0).getPeso() << endl;
         for(int i = 0; i < visitado.getArestasSaida().size(); i++){
             cout << "Entrou no for" << endl;
             Vertice proximo = visitado.getArestasSaida().at(i).getFim();                

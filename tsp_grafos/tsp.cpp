@@ -5,6 +5,10 @@
 using namespace std;
 const int infin = numeric_limits<int>::max();
 
+/**
+ * graph
+ * 
+*/
 int tsp(vector<vector<int>>& graph, vector<bool>& visited, int currPos, int n, int count, int cost, int& minCost) {
     if (count == n && graph[currPos][0] != 0) {
         minCost = min(minCost, cost + graph[currPos][0]);
@@ -25,12 +29,12 @@ int tsp(vector<vector<int>>& graph, vector<bool>& visited, int currPos, int n, i
 
 int main() {
     int n;
-    cout << "Digite o número de vértices: ";
+    cout << "Digite o numero de vertices: ";
     cin >> n;
 
     vector<vector<int>> graph(n, vector<int>(n));
 
-    cout << "Digite a matriz de adjacência:\n";
+    cout << "Digite a matriz de adjacencia:\n";
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             cin >> graph[i][j];

@@ -24,7 +24,8 @@ class Vertice{
             return dado == other.dado /*&& row == other.row*/;
         };
         ~Vertice() { };    
-        friend class Aresta;    
+        /*friend class Grafo;    
+        friend class Aresta;    */
 };
 class Aresta{
     private:
@@ -40,7 +41,8 @@ class Aresta{
         void setInicio(Vertice);
         void setFim(Vertice);
         ~Aresta() {} ;
-        //friend class Vertice;   
+        /*friend class Grafo;   
+        friend class Vertice;   */
 };
 
 
@@ -55,6 +57,8 @@ class Grafo{
         Vertice getVertice(string);
         void buscaEmLargura(int);        
         ~Grafo(){};
+       /* friend class Aresta;   
+        friend class Vertice;   */
 };
 
 
