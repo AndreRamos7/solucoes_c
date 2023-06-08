@@ -8,10 +8,10 @@ using namespace std;
 
 const int INF = numeric_limits<int>::max();
 double t_inicio, t_fim;
-int totalPermutations;
 
-double fatorial(int n){
-    double fat;
+
+int fatorial(int n){
+    int fat;
     if ( n <= 1 )
         return (1);
     else{
@@ -20,45 +20,53 @@ double fatorial(int n){
 }
 
 int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
-    totalPermutations = (fatorial(n) - 1)/2;
-
-    // Cria uma permutação inicial dos vértices
-    vector<int> permutacao;
-    for (int i = 1; i < n; i++) {
-        permutacao.push_back(i);
-    }
-
+    const int totalPermutations = (fatorial(n) - 1)/2;
     int menorCusto = INF;
-
-    
-    // Testa todas as permutações possíveis
-    for (int count = 0; count < totalPermutations; count++) {
-        int custo = 0;
-
-        // Calcula o custo da permutação atual
-        int origem = 0; // Vértice de origem (inicial)
-        for (int i = 0; i < n - 1; i++) {
-            int destino = permutacao[i];
-            custo += grafo[origem][destino];
-            origem = destino;
+    vector<int> permutacao;
+    //#pragma omp parallel// shared()
+    //{
+        
+        // Cria uma permutação inicial dos vértices
+        
+        for (int i = 1; i < n; i++) {
+            permutacao.push_back(i);
         }
+       
+        
 
-        // Adiciona o custo do último vértice de volta à origem
-        custo += grafo[origem][0];
+        //#pragma omp for
+            // Testa todas as permutações possíveis
+            for (int count = 0; count < totalPermutations; count++) {
+                int custo = 0;
 
-        // Atualiza o menor custo, se necessário
-        menorCusto = min(menorCusto, custo);
+                // Calcula o custo da permutação atual
+                int origem = 0; // Vértice de origem (inicial)  
+                #pragma omp parallel for shared(custo)            
+                for (int i = 0; i < n - 1; i++) {
+                    #pragma omp critical
+                    {
+                        int destino = permutacao[i];
+                        custo += grafo[origem][destino];
+                        origem = destino;
+                    }
+                }
 
-        if(!next_permutation(permutacao.begin(), permutacao.end()))
-            break;
-    } 
+                // Adiciona o custo do último vértice de volta à origem
+                custo += grafo[origem][0];
 
+                // Atualiza o menor custo, se necessário
+                menorCusto = min(menorCusto, custo);
+
+                next_permutation(permutacao.begin(), permutacao.end());
+                    
+            } 
+    //}
     return menorCusto;
 }
 
 int main() {
-    //omp_set_num_threads(omp_get_num_procs());
-    int n = 6;
+    omp_set_num_threads(3);
+    /*int n = 6;
     vector<vector<int>> grafo = {
         {0,1545,2450,2789,3866,4396},
         {1545,0,1897,2905,3936,3759},
@@ -66,7 +74,7 @@ int main() {
         {2789,2905,1114,0,1144,1917},
         {3866,3936,2131,1144,0,1758},
         {4396,3759,1973,1917,1758,0}
-    };/*
+    };*/
     int n = 11;
     vector<vector<int>> grafo = {
         {0,1545,2450,2789,3866,4396,1234,5431,4545,1594,2131},
@@ -81,7 +89,7 @@ int main() {
         {1594,1232,158,1231,4878,65454,2310,2123,1698,0,3541},
         {2131,2312,21598,3221,566,1234,6541,35789,1559,3541,0}
 
-    };*/
+    };
     
     t_inicio = omp_get_wtime();
     int menorCaminho = caixeiroViajanteForcaBruta(grafo, n);
