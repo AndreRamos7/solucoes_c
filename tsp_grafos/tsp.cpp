@@ -5,22 +5,22 @@
 using namespace std;
 const int infin = numeric_limits<int>::max();
 
-int tsp(vector<vector<int>>& graph, vector<bool>& visited, int currPos, int n, int count, int cost, int& minCost) {
-    if (count == n && graph[currPos][0] != 0) {
-        minCost = min(minCost, cost + graph[currPos][0]);
-        return minCost;
+int tsp(vector<vector<int>>& grafo, vector<bool>& visited, int currPos, int n, int count, int cost, int& custoMin) {
+    if (count == n && grafo[currPos][0] != 0) {
+        custoMin = min(custoMin, cost + grafo[currPos][0]);
+        return custoMin;
     }
     //cout << " -- " << cost;
 
     for (int i = 0; i < n; ++i) {
-        if (!visited[i] && graph[currPos][i] != 0) {
+        if (!visited[i] && grafo[currPos][i] != 0) {
             visited[i] = true;
-            tsp(graph, visited, i, n, count + 1, cost + graph[currPos][i], minCost);
+            tsp(grafo, visited, i, n, count + 1, cost + grafo[currPos][i], custoMin);
             visited[i] = false;
         }
     }
 
-    return minCost;
+    return custoMin;
 }
 
 int main() {
@@ -28,23 +28,23 @@ int main() {
     cout << "Digite o número de vértices: ";
     cin >> n;
 
-    vector<vector<int>> graph(n, vector<int>(n));
+    vector<vector<int>> grafo(n, vector<int>(n));
 
     cout << "Digite a matriz de adjacência:\n";
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-            cin >> graph[i][j];
+            cin >> grafo[i][j];
         }
         //cout << "Proxima linha" << endl;
     }
 
     vector<bool> visited(n, false);
     visited[0] = true;
-    int minCost = infin;
+    int custoMin = infin;
 
-    tsp(graph, visited, 0, n, 1, 0, minCost);
+    tsp(grafo, visited, 0, n, 1, 0, custoMin);
 
-    cout << "Custo mínimo do percurso: " << minCost << endl;
+    cout << "Custo mínimo do percurso: " << custoMin << endl;
 
     return 0;
 }
