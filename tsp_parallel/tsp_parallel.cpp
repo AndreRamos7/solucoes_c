@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 #include <algorithm>
 #include <limits>
@@ -8,10 +9,10 @@ using namespace std;
 
 const int INF = numeric_limits<int>::max();
 double t_inicio, t_fim;
-int totalPermutations;
 
-double fatorial(int n){
-    double fat;
+
+int fatorial(int n){
+    int fat;
     if ( n <= 1 )
         return (1);
     else{
@@ -20,25 +21,28 @@ double fatorial(int n){
 }
 
 int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
-    totalPermutations = fatorial(n);
+    const int totalPermutations = fatorial(n)-1;
+    cout << "totalPermutations: " << totalPermutations << endl;
     int menorCusto = INF;
-
-    // Cria uma permutação inicial dos vértices
     vector<int> permutacao;
+    
+    // Cria uma permutação inicial dos vértices
     for (int i = 1; i < n; i++) {
         permutacao.push_back(i);
     }
-    
+    bool prox = true;
+    #pragma omp parallel for schedule(static)
     // Testa todas as permutações possíveis
     for (int count = 0; count < totalPermutations; count++) {
         int custo = 0;
 
         // Calcula o custo da permutação atual
-        int origem = 0; // Vértice de origem (inicial)
+        int origem = 0; // Vértice de origem (inicial)  
+                 
         for (int i = 0; i < n - 1; i++) {
             int destino = permutacao[i];
             custo += grafo[origem][destino];
-            origem = destino;
+            origem = destino;            
         }
 
         // Adiciona o custo do último vértice de volta à origem
@@ -46,16 +50,19 @@ int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
 
         // Atualiza o menor custo, se necessário
         menorCusto = min(menorCusto, custo);
-
-        next_permutation(permutacao.begin(), permutacao.end());
-        
+        prox = next_permutation(permutacao.begin(), permutacao.end());
+        //printf("%d\n", prox);
+        printf("iteração %d na thread %d/%d: prox %d\n", count, omp_get_thread_num(), omp_get_num_threads(), prox);
+            
     } 
-
+    
     return menorCusto;
 }
 
 int main(int argc, char* argv[]) {
-    omp_set_num_threads(argc);
+    omp_set_num_threads(stoi(argv[1]));
+    
+    
     int n = 6;
     vector<vector<int>> grafo = {
         {0,1545,2450,2789,3866,4396},
@@ -65,6 +72,14 @@ int main(int argc, char* argv[]) {
         {3866,3936,2131,1144,0,1758},
         {4396,3759,1973,1917,1758,0}
     };/*
+    int n = 5;
+    vector<vector<int>> grafo = {
+        {0,1545,2450,2789,3866},
+        {1545,0,1897,2905,3936},
+        {2450,1897,0,1114,2131},
+        {2789,2905,1114,0,1144},
+        {3866,3936,2131,1144,0}        
+    };
     int n = 11;
     vector<vector<int>> grafo = {
         {0,1545,2450,2789,3866,4396,1234,5431,4545,1594,2131},
@@ -79,8 +94,18 @@ int main(int argc, char* argv[]) {
         {1594,1232,158,1231,4878,65454,2310,2123,1698,0,3541},
         {2131,2312,21598,3221,566,1234,6541,35789,1559,3541,0}
 
-    };*/
-    
+    };
+    int n = 7;
+    vector<vector<int>> grafo = {
+    {0,1545,2450,2789,3866,4396,1234},
+    {1545,0,1897,2905,3936,3759,2211},
+    {2450,1897,0,1114,2131,1973,1235},
+    {2789,2905,1114,0,1144,1917,1235},
+    {3866,3936,2131,1144,0,1758,2554},
+    {4396,3759,1973,1917,1758,0,1597},
+    {1234,2211,1235,1235,2554,1597,0}
+    };
+    */
     t_inicio = omp_get_wtime();
     int menorCaminho = caixeiroViajanteForcaBruta(grafo, n);
     t_fim = omp_get_wtime();
