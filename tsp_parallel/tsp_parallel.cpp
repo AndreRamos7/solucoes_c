@@ -25,37 +25,41 @@ int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
         permutacao.push_back(i);
     }
     bool prox = true;
-    #pragma omp parallel for schedule(static) shared(permutacao)
-    // Testa todas as permutações possíveis
-    for (int count = 0; count < totalPermutations; count++) {
-        int custo = 0;
-        mostrar_permutacao(permutacao);
+    #pragma omp parallel shared(permutacao)
+    {
+        #pragma omp for schedule(static) nowait
+        // Testa todas as permutações possíveis
+        for (int count = 0; count < totalPermutations; count++) {
+            int custo = 0;
 
-        // Calcula o custo da permutação atual
-        int origem = 0; // Vértice de origem (inicial)  
-                 
-        for (int i = 0; i < n - 1; i++) {
-            int destino = permutacao[i];
-            custo += grafo[origem][destino];
-            origem = destino;            
-        }
-        // Adiciona o custo do último vértice de volta à origem
-        custo += grafo[origem][0];
-        
-      
-        // Atualiza o menor custo, se necessário
-        #pragma omp critical (custo_menor)
-        {
-            menorCusto = min(menorCusto, custo);
-        }
-        #pragma omp critical (permutation)
-        {
-            prox = next_permutation(permutacao.begin(), permutacao.end());
-        }
-        printf("iteração %d na thread %d/%d: prox %d\n", count, omp_get_thread_num(), omp_get_num_threads(), prox);
+           
+
+            // Calcula o custo da permutação atual
+            int origem = 0; // Vértice de origem (inicial)  
+                    
+            for (int i = 0; i < n - 1; i++) {
+                int destino = permutacao[i];
+                custo += grafo[origem][destino];
+                origem = destino;            
+            }
+            // Adiciona o custo do último vértice de volta à origem
+            custo += grafo[origem][0];
             
-    } 
-    
+        
+            // Atualiza o menor custo, se necessário
+            #pragma omp critical (custo_menor)
+            {
+                menorCusto = min(menorCusto, custo);
+            }
+            #pragma omp critical (permutation)
+            {
+                mostrar_permutacao(permutacao);
+                next_permutation(permutacao.begin(), permutacao.end());
+            }
+            printf("iteração %d na thread %d/%d: prox %d\n", count, omp_get_thread_num(), omp_get_num_threads(), prox);
+                
+        } 
+    }
     return menorCusto;
 }
 
@@ -133,5 +137,6 @@ int fatorial(int n){
 void mostrar_permutacao(vector<int> perm){
     for(int i = 0; i < perm.size(); i++)
         cout << perm.at(i) << "-";
+    cout << endl;
 
 }
