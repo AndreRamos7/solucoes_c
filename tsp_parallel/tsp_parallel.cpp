@@ -10,18 +10,12 @@ using namespace std;
 const int INF = numeric_limits<int>::max();
 double t_inicio, t_fim;
 
+int fatorial(int);
+void mostrar_permutacao(vector<int>);
 
-int fatorial(int n){
-    int fat;
-    if ( n <= 1 )
-        return (1);
-    else{
-       return n * fatorial(n - 1);
-    }
-}
 
 int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
-    const int totalPermutations = fatorial(n)-1;
+    const int totalPermutations = fatorial(n-1)/2;
     cout << "totalPermutations: " << totalPermutations << endl;
     int menorCusto = INF;
     vector<int> permutacao;
@@ -31,10 +25,11 @@ int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
         permutacao.push_back(i);
     }
     bool prox = true;
-    #pragma omp parallel for schedule(static)
+    #pragma omp parallel for schedule(static) shared(permutacao)
     // Testa todas as permutações possíveis
     for (int count = 0; count < totalPermutations; count++) {
         int custo = 0;
+        mostrar_permutacao(permutacao);
 
         // Calcula o custo da permutação atual
         int origem = 0; // Vértice de origem (inicial)  
@@ -44,14 +39,19 @@ int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
             custo += grafo[origem][destino];
             origem = destino;            
         }
-
         // Adiciona o custo do último vértice de volta à origem
         custo += grafo[origem][0];
-
+        
+      
         // Atualiza o menor custo, se necessário
-        menorCusto = min(menorCusto, custo);
-        prox = next_permutation(permutacao.begin(), permutacao.end());
-        //printf("%d\n", prox);
+        #pragma omp critical (custo_menor)
+        {
+            menorCusto = min(menorCusto, custo);
+        }
+        #pragma omp critical (permutation)
+        {
+            prox = next_permutation(permutacao.begin(), permutacao.end());
+        }
         printf("iteração %d na thread %d/%d: prox %d\n", count, omp_get_thread_num(), omp_get_num_threads(), prox);
             
     } 
@@ -60,9 +60,13 @@ int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
 }
 
 int main(int argc, char* argv[]) {
-    omp_set_num_threads(stoi(argv[1]));
+    if (argc < 2) {
+	   cout << "Valor inválido! Entre com o valor de threads após o executável\n";
+	   return 0;	
+	}else
+        omp_set_num_threads(stoi(argv[1]));
     
-    
+    /*
     int n = 6;
     vector<vector<int>> grafo = {
         {0,1545,2450,2789,3866,4396},
@@ -71,7 +75,7 @@ int main(int argc, char* argv[]) {
         {2789,2905,1114,0,1144,1917},
         {3866,3936,2131,1144,0,1758},
         {4396,3759,1973,1917,1758,0}
-    };/*
+    };
     int n = 5;
     vector<vector<int>> grafo = {
         {0,1545,2450,2789,3866},
@@ -79,7 +83,7 @@ int main(int argc, char* argv[]) {
         {2450,1897,0,1114,2131},
         {2789,2905,1114,0,1144},
         {3866,3936,2131,1144,0}        
-    };
+    };*/
     int n = 11;
     vector<vector<int>> grafo = {
         {0,1545,2450,2789,3866,4396,1234,5431,4545,1594,2131},
@@ -94,7 +98,7 @@ int main(int argc, char* argv[]) {
         {1594,1232,158,1231,4878,65454,2310,2123,1698,0,3541},
         {2131,2312,21598,3221,566,1234,6541,35789,1559,3541,0}
 
-    };
+    };/*
     int n = 7;
     vector<vector<int>> grafo = {
     {0,1545,2450,2789,3866,4396,1234},
@@ -114,4 +118,20 @@ int main(int argc, char* argv[]) {
     << (t_fim - t_inicio) << "s" << endl;
 
     return 0;
+}
+
+
+int fatorial(int n){
+    int fat;
+    if ( n <= 1 )
+        return (1);
+    else{
+       return n * fatorial(n - 1);
+    }
+}
+
+void mostrar_permutacao(vector<int> perm){
+    for(int i = 0; i < perm.size(); i++)
+        cout << perm.at(i) << "-";
+
 }
