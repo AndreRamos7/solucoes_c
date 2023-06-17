@@ -40,8 +40,8 @@ int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n, double* 
 		*t_inicio = MPI_Wtime();
 
 		// Testa todas as permutações possíveis
-		for (int count = (totalPermutations/num_procs)*(meu_ranque-1);
-		 count < (totalPermutations/num_procs)*(meu_ranque); count++) {
+		for (int count = (totalPermutations/(num_procs-1))*(meu_ranque-1);
+		 count < (totalPermutations/(num_procs-1))*(meu_ranque); count++) {
 		    int custo = 0;
 
 		    // Calcula o custo da permutação atual

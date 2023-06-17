@@ -32,8 +32,6 @@ int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
         for (int count = 0; count < totalPermutations; count++) {
             int custo = 0;
 
-           
-
             // Calcula o custo da permutação atual
             int origem = 0; // Vértice de origem (inicial)  
                     
