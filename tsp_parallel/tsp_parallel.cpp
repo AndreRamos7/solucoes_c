@@ -14,7 +14,7 @@ int fatorial(int);
 void mostrar_permutacao(vector<int>);
 
 
-int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
+int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n, vector<int>& caminho_resultante) {
     const int totalPermutations = fatorial(n-1)/2;
     cout << "totalPermutations: " << totalPermutations << endl;
     int menorCusto = INF;
@@ -24,6 +24,9 @@ int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
     for (int i = 1; i < n; i++) {
         permutacao.push_back(i);
     }
+    //atribui a permutação inicial como caminho_resultante
+    caminho_resultante = permutacao;
+
     bool prox = true;
     #pragma omp parallel shared(permutacao)
     {
@@ -47,14 +50,23 @@ int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n) {
             // Atualiza o menor custo, se necessário
             #pragma omp critical (custo_menor)
             {
-                menorCusto = min(menorCusto, custo);
+                if(menorCusto > custo){
+                    menorCusto = custo; 
+                    caminho_resultante = permutacao;
+                }else
+                    menorCusto = menorCusto;
+                
+                //menorCusto = min(menorCusto, custo);
+            }
+            #pragma omp critical (mostra)
+            {
+                mostrar_permutacao(permutacao);
             }
             #pragma omp critical (permutation)
             {
-                mostrar_permutacao(permutacao);
                 next_permutation(permutacao.begin(), permutacao.end());
             }
-            printf("iteração %d na thread %d/%d: prox %d\n", count, omp_get_thread_num(), omp_get_num_threads(), prox);
+            //printf("iteração %d na thread %d/%d: prox %d\n", count, omp_get_thread_num(), omp_get_num_threads(), prox);
                 
         } 
     }
@@ -67,7 +79,8 @@ int main(int argc, char* argv[]) {
 	   return 0;	
 	}else
         omp_set_num_threads(stoi(argv[1]));
-    
+    vector<int> caminho_resultante;
+
     /*
     int n = 6;
     vector<vector<int>> grafo = {
@@ -129,11 +142,14 @@ int main(int argc, char* argv[]) {
     };
     
     t_inicio = omp_get_wtime();
-    int menorCaminho = caixeiroViajanteForcaBruta(grafo, n);
+    int menorCaminho = caixeiroViajanteForcaBruta(grafo, n, caminho_resultante);
     t_fim = omp_get_wtime();
 
     cout << "O menor caminho no problema do Caixeiro Viajante é: " << menorCaminho << " em " 
     << (t_fim - t_inicio) << "s" << endl;
+    
+    cout << "o Caminho final é: " << endl;
+    mostrar_permutacao(caminho_resultante);
 
     return 0;
 }
