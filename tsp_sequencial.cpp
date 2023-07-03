@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <limits>
+#include <time.h>
 #include <omp.h>
 
 using namespace std;
@@ -27,56 +28,41 @@ int caixeiroViajanteForcaBruta(const vector<vector<int>>& grafo, int n, vector<i
     //atribui a permutação inicial como caminho_resultante
     caminho_resultante = permutacao;
 
-    #pragma omp parallel shared(permutacao)
-    {
-        #pragma omp for schedule(static) 
-        // Testa todas as permutações possíveis
-        for (int count = 0; count < totalPermutations; count++) {
-            int custo = 0;
+    
+    // Testa todas as permutações possíveis
+    for (int count = 0; count < totalPermutations; count++) {
+        int custo = 0;
 
-            // Calcula o custo da permutação atual
-            int origem = 0; // Vértice de origem (inicial)  
-                    
-            for (int i = 0; i < n - 1; i++) {
-                int destino = permutacao[i];
-                custo += grafo[origem][destino];
-                origem = destino;            
-            }
-            // Adiciona o custo do último vértice de volta à origem
-            custo += grafo[origem][0];
-            
-        
-            // Atualiza o menor custo, se necessário
-            #pragma omp critical (custo_menor)
-            {
-                if(menorCusto > custo){
-                    menorCusto = custo; 
-                    caminho_resultante = permutacao;
-                }else
-                    menorCusto = menorCusto;                
-                //menorCusto = min(menorCusto, custo);
-            }
-            /*#pragma omp critical (mostra)
-            {
-                mostrar_permutacao(permutacao);
-            }*/
-            #pragma omp critical (permutation)
-            {
-                next_permutation(permutacao.begin(), permutacao.end());
-            }
-            //printf("iteração %d na thread %d/%d: prox %d\n", count, omp_get_thread_num(), omp_get_num_threads(), prox);
+        // Calcula o custo da permutação atual
+        int origem = 0; // Vértice de origem (inicial)  
                 
-        } 
-    }
+        for (int i = 0; i < n - 1; i++) {
+            int destino = permutacao[i];
+            custo += grafo[origem][destino];
+            origem = destino;            
+        }
+        // Adiciona o custo do último vértice de volta à origem
+        custo += grafo[origem][0];            
+    
+        // Atualiza o menor custo, se necessário
+        if(menorCusto > custo){
+            menorCusto = custo; 
+            //salva o caminho melhor
+            caminho_resultante = permutacao;
+        }else
+            menorCusto = menorCusto;                
+        
+        //menorCusto = min(menorCusto, custo);           
+        
+        next_permutation(permutacao.begin(), permutacao.end());            
+        //printf("iteração %d na thread %d/%d: prox %d\n", count, omp_get_thread_num(), omp_get_num_threads(), prox);
+            
+    } 
+    
     return menorCusto;
 }
 
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
-	   cout << "Valor inválido! Entre com a quantidade de threads após o executável.\n";
-	   return 0;	
-	}else
-        omp_set_num_threads(stoi(argv[1]));
+int main(int argc, char* argv[]) {    
     vector<int> caminho_resultante;
 
     /*
